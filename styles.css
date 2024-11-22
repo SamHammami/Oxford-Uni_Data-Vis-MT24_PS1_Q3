@@ -1,28 +1,47 @@
 /* General styles */
 body {
-    font-family: Arial, sans-serif;
+    font-family: Arial;
     text-align: center;
-}
-
-h1 {
-    font-size: 24px;
-    margin-top: 5%;
-    margin-bottom: -1%;
-    
+    font-size: 18px;
+    margin-top: 6%;
+    margin-bottom: -4%;
 }
 
 svg {
     display: block;
     margin: 0 auto;
-}
-
-.axis-label {
-    font-size: 12px;
-    fill: black;
+    border: 2px solid #ccc; 
+    border-radius: 100px;
+    padding: 2%; 
 }
 
 .title {
-    font-size: 16px;
+    font-family: Arial;
+    font-size: 30px;
     font-weight: bold;
     text-anchor: middle;
+    fill: rgb(121, 118, 118);
 }
+
+.labels {
+    font-family: Arial;
+    font-size: 28px;
+    fill: rgb(121, 118, 118);
+
+}
+.tick text {
+    font-family: Arial;
+    font-size: 20px;
+    fill: rgb(121, 118, 118);
+}
+
+.tick line {
+    stroke: lightgray;
+}
+
+circle {
+    fill: steelblue;
+    opacity: 0.3;
+}
+
+
