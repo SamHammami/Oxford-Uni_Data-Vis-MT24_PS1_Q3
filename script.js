@@ -1,69 +1,86 @@
-// Define dimensions and margins
-const width = 960;
-const height = 500;
-const margin = { top: 20, right: 30, bottom: 50, left: 60 };
+// Select the SVG and set dimensions
+const svg = d3.select('svg');
+const width = +svg.attr('width');
+const height = +svg.attr('height');
 
+// Set margins for the chart area
+const margin = { top: 50, right: 20, bottom: 50, left: 70 };
 const innerWidth = width - margin.left - margin.right;
 const innerHeight = height - margin.top - margin.bottom;
 
-// Select SVG and create a group for the chart
-const svg = d3.select('svg')
-    .attr('width', width)
-    .attr('height', height);
-
+// Create group element to apply margins
 const g = svg.append('g')
     .attr('transform', `translate(${margin.left}, ${margin.top})`);
 
-// Load data
+// Load CSV data
 d3.csv('auto-mpg.csv').then(data => {
-    // Parse data
+    // Parse and clean data
     data.forEach(d => {
-        d.mpg = +d.mpg; // Convert mpg to number
         d.horsepower = +d.horsepower; // Convert horsepower to number
+        d.weight = +d.weight; // Convert weight to number
     });
 
     // Define scales
     const xScale = d3.scaleLinear()
-        .domain(d3.extent(data, d => d.horsepower)) // Calculate min and max
-        .nice() // Round limits
+        .domain(d3.extent(data, d => d.horsepower)) // Min and max for x
+        .nice()
         .range([0, innerWidth]);
 
     const yScale = d3.scaleLinear()
-        .domain(d3.extent(data, d => d.mpg))
+        .domain(d3.extent(data, d => d.weight)) // Min and max for y
         .nice()
-        .range([innerHeight, 0]); // Invert to match SVG coordinates
+        .range([innerHeight, 0]); // Invert y-axis
 
-    // Add axes
-    const xAxis = d3.axisBottom(xScale);
-    const yAxis = d3.axisLeft(yScale);
+    // Define axes
+    const xAxis = d3.axisBottom(xScale).tickSize(-innerHeight);
+    const yAxis = d3.axisLeft(yScale).tickSize(-innerWidth);
 
-    g.append('g')
-        .call(xAxis)
-        .attr('transform', `translate(0, ${innerHeight})`)
-        .append('text')
+    // Add X axis
+    // g.append('g')
+    //     .call(xAxis)
+    //     .attr('transform', `translate(0, ${innerHeight})`)
+    //     .append('text')
+    //     .attr('class', 'axis-label')
+    //     .attr('x', innerWidth / 2)
+    //     .attr('y', 40)
+    //     .attr('fill', 'black')
+    //     .text('Horsepower');
+    
+    xAxisGroup.append('text')
+        .attr('class', 'axis-label')
         .attr('x', innerWidth / 2)
-        .attr('y', 40)
+        .attr('y', 40) // Distance from the axis
         .attr('fill', 'black')
         .text('Horsepower');
+      
 
+    // Add Y axis
     g.append('g')
         .call(yAxis)
         .append('text')
+        .attr('class', 'axis-label')
         .attr('x', -innerHeight / 2)
-        .attr('y', -40)
+        .attr('y', -50)
         .attr('fill', 'black')
-        .text('MPG')
+        .attr('text-anchor', 'middle')
         .attr('transform', 'rotate(-90)')
-        .attr('text-anchor', 'middle');
+        .text('Weight');
 
-    // Add circles
+    // Add scatter plot circles
     g.selectAll('circle')
         .data(data)
         .enter()
         .append('circle')
         .attr('cx', d => xScale(d.horsepower))
-        .attr('cy', d => yScale(d.mpg))
-        .attr('r', 10) // Fixed radius
+        .attr('cy', d => yScale(d.weight))
+        .attr('r', 10)
         .attr('fill', 'steelblue')
-        .attr('opacity', 0.3); // Fixed opacity
+        .attr('opacity', 0.3);
+
+    // Add chart title
+    g.append('text')
+        .attr('class', 'title')
+        .attr('x', innerWidth / 2)
+        .attr('y', -10)
+        .text('Cars: Horsepower vs Weight');
 });
