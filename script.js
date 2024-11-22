@@ -1,36 +1,45 @@
+/*---                   Part 1: Load the data                     ---*/
+
 // Select the SVG and set up dimensions
 const svg = d3.select('svg');
 const width = +svg.attr('width');
 const height = +svg.attr('height');
 
+// Set the margins for the chart
 const margin = { left: 120, right: 50, top: 50, bottom: 90 };
 const innerWidth = width - margin.left - margin.right;
 const innerHeight = height - margin.top - margin.bottom;
 
 // Load data from auto-mpg.csv
-d3.csv('auto-mpg.csv').then(data => {
-    // Format the data: convert horsepower and weight to numbers
-    const processedData = data.map(d => ({
-        horsepower: +d.horsepower,
-        weight: +d.weight
-    }))
-    // Error checking
-    console.log('Data not processed correctly', processedData);
+d3.csv('auto-mpg.csv')
+    .then(data => { 
+        // Format the data: convert horsepower and weight to numbers
+        const processedData = data.map (d => ({ 
+            horsepower: +d.horsepower, 
+            weight: +d.weight 
+        }));
+        // Error checking
+        console.log('Data not processed correctly', processedData);
+            
+        // Set the domains of the scales based on the data
+        xScale.domain(d3.extent(processedData, d => d.horsepower)).nice();
+        yScale.domain(d3.extent(processedData, d => d.weight)).nice();
+            
+        // Draw the chart
+        drawChart(processedData);
+    }
+);
 
-    // Set the domains of the scales based on the data
-    xScale.domain(d3.extent(processedData, d => d.horsepower)).nice();
-    yScale.domain(d3.extent(processedData, d => d.weight)).nice();
 
-    // Draw the chart
-    drawChart(processedData);
-});
+
+
+/*---                   Part 2: Create the chart               ---*/
 
 
 // Create a group element to position the chart within the margins
 const g = svg
     .append('g')
     .attr('transform', `translate(${margin.left},${margin.top})`);
-    
 // Scales for the x-axis and y-axis
 const xScale = d3   
     .scaleLinear()
@@ -40,6 +49,8 @@ const yScale = d3
     .scaleLinear()
     .range([0, innerHeight]); // Flip the Y-axis
 
+
+// Function to draw the chart
 function drawChart(data) {
 
     // Create the x-axis
@@ -63,6 +74,7 @@ function drawChart(data) {
     // Remove the domain line x-axis
     xAxisGroup.select('.domain').remove();
     
+
     // Create the y-axis
     const yAxis = d3
         .axisLeft(yScale)
@@ -93,7 +105,6 @@ function drawChart(data) {
         .attr('text-anchor', 'middle')
         .text('Cars: Horsepower vs Weight');
 
-        
 
     // Add the circles for the scatter plot
     g.selectAll('circle')
@@ -103,4 +114,5 @@ function drawChart(data) {
         .attr('cx', d => xScale(d.horsepower))
         .attr('cy', d => yScale(d.weight))
         .attr('r', 10) // Radius of the circles
+
 }
